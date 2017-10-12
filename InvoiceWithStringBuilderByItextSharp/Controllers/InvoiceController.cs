@@ -398,5 +398,180 @@ namespace InvoiceWithStringBuilderByItextSharp.Controllers
 
             return View();
         }
+
+
+
+
+        public ActionResult Invoice3()
+        {
+
+            string clientName = "Shohag";
+            string contactNo = "01926029000";
+            string email = "shohaghassan@gmail.com";
+            string address = "Chittagong";
+
+            int clientNo = 10001;
+            int orderNo = aBilling.PaymentId;
+            string sellerBy = "mmenterprise@gmail.com";
+            string date = DateTime.Now.ToString("dd-MM-yyyy");
+
+            int quantity = 12;
+            double totalCost = 3800;
+            double discount = 0;
+            double payableAmount = 3800;
+            double due = 0;
+            double advanced = 0;
+
+
+
+
+            DataTable dt = new DataTable();
+            dt.Columns.AddRange(new DataColumn[5] {
+                new DataColumn("SL", typeof(string)),
+                new DataColumn("Product", typeof(string)),
+                new DataColumn("Quantity", typeof(int)),
+                new DataColumn("Price", typeof(int)),
+                new DataColumn("Net Price", typeof(int))});
+
+            //foreach (var ItemList in ViewBag.ItemList)
+            //{
+            //    dt.Rows.Add(101, "Sun Glasses", 200, 5, 1000);
+            //}
+
+            dt.Rows.Add(101, "Sun Glasses", 5, 200, 1000);
+            dt.Rows.Add(102, "Jeans", 2, 400, 800);
+            dt.Rows.Add(103, "Trousers", 3, 300, 900);
+            dt.Rows.Add(104, "Shirts", 2, 550, 1100);
+            using (StringWriter sw = new StringWriter())
+            {
+                using (HtmlTextWriter hw = new HtmlTextWriter(sw))
+                {
+                    StringBuilder sb = new StringBuilder();
+
+                    //Generate Invoice (Bill) Header.
+                    sb.Append("<table width='100%' cellspacing='0' cellpadding='2'>");
+                    sb.Append("<tr><td Style='color:green; text-align:center' colspan = '2'><h2><b>MM Enterprise</b></h2></td></tr>");
+
+                    sb.Append("<tr><td colspan = '2'></td></tr>");
+                    sb.Append("<tr><td><b>Name: </b>");
+                    sb.Append(clientName);
+                    sb.Append("</td><td align = 'right'><b>Client ID: </b>");
+                    sb.Append(clientNo);
+                    sb.Append(" </td></tr>");
+
+
+                    sb.Append("<tr><td colspan = '2'></td></tr>");
+                    sb.Append("<tr><td><b>Contact No: </b>");
+                    sb.Append(contactNo);
+                    sb.Append("</td><td align = 'right'><b>Billing ID: </b>");
+                    sb.Append(orderNo);
+                    sb.Append(" </td></tr>");
+
+                    sb.Append("<tr><td colspan = '2'></td></tr>");
+                    sb.Append("<tr><td><b>E-mail: </b>");
+                    sb.Append(email);
+                    sb.Append("</td><td align = 'right'><b>Seller-By: </b>");
+                    sb.Append(sellerBy);
+                    sb.Append(" </td></tr>");
+
+                    sb.Append("<tr><td colspan = '2'></td></tr>");
+                    sb.Append("<tr><td><b>Address: </b>");
+                    sb.Append(address);
+                    sb.Append("</td><td align = 'right'><b>Date: </b>");
+                    sb.Append(date);
+                    sb.Append(" </td></tr>");
+
+
+
+                    sb.Append("</table>");
+                    sb.Append("<br />");
+
+                    //Generate Invoice (Bill) Items Grid.
+                    sb.Append("<table border = '0'>");
+                    sb.Append("<tr>");
+                    foreach (DataColumn column in dt.Columns)
+                    {
+                        sb.Append("<th style = 'background-color: #2D2D30; color:#FF0000'>");
+                        sb.Append(column.ColumnName);
+                        sb.Append("</th>");
+                    }
+                    sb.Append("</tr>");
+                    foreach (DataRow row in dt.Rows)
+                    {
+                        sb.Append("<tr>");
+                        foreach (DataColumn column in dt.Columns)
+                        {
+                            sb.Append("<td>");
+                            sb.Append(row[column]);
+                            sb.Append("</td>");
+                        }
+                        sb.Append("</tr>");
+                    }
+                    sb.Append("</tr></table>");
+                    sb.Append("<br/>");
+
+
+
+
+                    //Last Table or 3rd Table 
+                    sb.Append("<table width='100%' cellspacing='0' cellpadding='2'>");
+
+                    sb.Append("<tr><td colspan = '2'></td></tr>");
+                    sb.Append("<tr><td><b>Total Quantity: </b>");
+                    sb.Append(quantity);
+                    sb.Append("</td><td align = 'right'><b>Grand Total: </b>");
+                    sb.Append(totalCost);
+                    sb.Append(" Taka </td></tr>");
+
+                    sb.Append("<tr><td colspan = '2'></td></tr>");
+                    sb.Append("<tr><td><b> </b>");
+                    sb.Append("</td><td align = 'right'><b>Discount Total : </b>");
+                    sb.Append(discount);
+                    sb.Append(" Taka </td></tr>");
+
+                    sb.Append("<tr><td colspan = '2'></td></tr>");
+                    sb.Append("<tr><td><b> </b>");
+                    sb.Append("</td><td align = 'right'><b>Payable Amount : </b>");
+                    sb.Append(payableAmount);
+                    sb.Append(" Taka </td></tr>");
+
+                    sb.Append("<tr><td colspan = '2'></td></tr>");
+                    sb.Append("<tr><td><b> </b>");
+                    sb.Append("</td><td align = 'right'><b>Due : </b>");
+                    sb.Append(due);
+                    sb.Append(" Taka </td></tr>");
+
+                    sb.Append("<tr><td colspan = '2'></td></tr>");
+                    sb.Append("<tr><td><b> </b>");
+                    sb.Append("</td><td align = 'right'><b>Advanced : </b>");
+                    sb.Append(advanced);
+                    sb.Append(" Taka </td></tr>");
+
+                    sb.Append("</table>");
+                    sb.Append("<br />");
+
+
+
+
+                    //Export HTML String as PDF.
+                    StringReader sr = new StringReader(sb.ToString());
+                    Document pdfDoc = new Document(PageSize.A4, 10f, 10f, 10f, 0f);
+                    HTMLWorker htmlparser = new HTMLWorker(pdfDoc);
+                    PdfWriter writer = PdfWriter.GetInstance(pdfDoc, Response.OutputStream);
+                    pdfDoc.Open();
+                    htmlparser.Parse(sr);
+                    pdfDoc.Close();
+                    Response.ContentType = "application/pdf";
+                    Response.AddHeader("content-disposition", "attachment;filename=Invoice-" + orderNo + ".pdf");
+                    Response.Cache.SetCacheability(HttpCacheability.NoCache);
+                    Response.Write(pdfDoc);
+                    Response.End();
+                }
+            }
+
+
+
+            return View();
+        }
     }
 }
